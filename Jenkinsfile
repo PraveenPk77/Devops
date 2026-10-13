@@ -1,4 +1,4 @@
-// Parcel Trail CI/CD: Checkout -> Build -> Test -> Deploy (Ansible) -> Verify
+// Parcel Trail CI/CD: Checkout -> Build -> Test -> Deploy -> Verify
 // Works on Linux agents (sh) and Windows agents (bat).
 def run(String cmd) {
     if (isUnix()) { sh cmd } else { bat cmd }
@@ -16,14 +16,13 @@ pipeline {
     environment {
         IMAGE_NAME = 'parcel-trail'
         APP_PORT   = '5003'
-        // On Windows agents, uncomment and adjust if docker is not on the service PATH:
-        // PATH = "C:\\Program Files\\Docker\\Docker\\resources\\bin;${env.PATH}"
+        // Common Docker Desktop installation paths on Windows agents:
+        PATH       = "C:\\Users\\dhars\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;C:\\Program Files\\Docker\\Docker\\resources\\bin;${env.PATH}"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Uses the repository configured in the Jenkins job (Pipeline from SCM)
                 checkout scm
             }
         }
@@ -41,10 +40,21 @@ pipeline {
             }
         }
 
-        stage('Deploy with Ansible') {
+        stage('Deploy') {
             steps {
-                // Fails the build if Ansible or the health check fails
-                run "ansible-playbook -i inventory.ini courier-deploy.yml -e image_tag=${BUILD_NUMBER}"
+                script {
+                    if (isUnix()) {
+                        sh "ansible-playbook -i inventory.ini courier-deploy.yml -e image_tag=${BUILD_NUMBER}"
+                    } else {
+                        // Direct Docker deployment on Windows agents (where native Ansible is unavailable)
+                        bat """
+                            docker volume create parcel_trail_data 2>nul || ver >nul
+                            docker stop parcel-trail-app 2>nul || ver >nul
+                            docker rm parcel-trail-app 2>nul || ver >nul
+                            docker run -d --name parcel-trail-app -p ${APP_PORT}:5000 -v parcel_trail_data:/app/data ${IMAGE_NAME}:${BUILD_NUMBER}
+                        """
+                    }
+                }
             }
         }
     }
@@ -55,3 +65,4 @@ pipeline {
         cleanup { run "docker image prune -f" }
     }
 }
+

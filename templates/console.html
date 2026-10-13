@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Console{% endblock %}
+{% block content %}
+{% from "_macros.html" import chip %}
+<h1 class="page-title">Dispatch console</h1>
+
+<dl class="tally">
+  <div><dt>All parcels</dt><dd>{{ stats.total }}</dd></div>
+  <div><dt>Waiting for pickup</dt><dd>{{ stats.booked }}</dd></div>
+  <div><dt>On the road</dt><dd>{{ stats.active }}</dd></div>
+  <div><dt>Delivered</dt><dd>{{ stats.delivered }}</dd></div>
+  <div class="{% if stats.exceptions %}alert{% endif %}"><dt>Exceptions</dt><dd>{{ stats.exceptions }}</dd></div>
+  <div><dt>Booked value</dt><dd>Rs {{ '{:,.0f}'.format(stats.revenue) }}</dd></div>
+</dl>
+
+<form class="filters" method="get">
+  <input name="q" value="{{ q }}" placeholder="Search number or name" aria-label="Search">
+  <select name="status" aria-label="Filter by status">
+    <option value="">All statuses</option>
+    {% for st in STATUSES %}<option {% if st == status %}selected{% endif %}>{{ st }}</option>{% endfor %}
+  </select>
+  <button class="btn btn-small">Filter</button>
+  {% if q or status %}<a class="linkbtn" href="{{ url_for('console') }}">Clear</a>{% endif %}
+</form>
+
+{% if rows %}
+<div class="table-wrap">
+<table class="manifest">
+  <thead><tr><th>Tracking number</th><th>Route</th><th>Service</th><th>Status</th><th>Expected</th><th></th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td class="tid">{{ r.tracking_id }}</td>
+      <td>{{ r.origin }} to {{ r.destination }}<br><span class="muted">{{ r.sender_name }} to {{ r.receiver_name }}</span></td>
+      <td>{{ r.service }}<br><span class="muted">{{ r.weight_kg }} kg</span></td>
+      <td>{{ chip(r.status) }}</td>
+      <td>{{ r.eta|nice_date }}</td>
+      <td><a href="{{ url_for('shipment_detail', tracking_id=r.tracking_id) }}">Update</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="empty">
+  <p>No parcels match yet.</p>
+  <a class="btn btn-small" href="{{ url_for('book') }}">Book the first parcel</a>
+</div>
+{% endif %}
+{% endblock %}

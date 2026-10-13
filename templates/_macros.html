@@ -1,0 +1,37 @@
+{% macro chip(status) %}<span class="chip chip-{{ status|slug }}">{{ status }}</span>{% endmacro %}
+
+{# Barcode drawn from the tracking number so every parcel gets its own pattern #}
+{% macro barcode(code) %}
+{% set chars = "0123456789PT" %}
+{% set t = namespace(w=6) %}
+{% for ch in code %}
+  {% set d = chars.index(ch) %}
+  {% set t.w = t.w + (1 + d % 3) + (1 + (d // 3) % 2) + (1 + (d // 2) % 3) + 2 %}
+{% endfor %}
+{% set ns = namespace(x=3) %}
+<svg class="barcode" viewBox="0 0 {{ t.w }} 40" preserveAspectRatio="none" role="img" aria-label="Barcode for {{ code }}">
+  <rect x="{{ ns.x }}" y="0" width="1" height="40"/>{% set ns.x = ns.x + 2 %}
+  {% for ch in code %}
+    {% set d = chars.index(ch) %}
+    {% set w1 = 1 + d % 3 %}{% set g1 = 1 + (d // 3) % 2 %}{% set w2 = 1 + (d // 2) % 3 %}
+    <rect x="{{ ns.x }}" y="0" width="{{ w1 }}" height="40"/>{% set ns.x = ns.x + w1 + g1 %}
+    <rect x="{{ ns.x }}" y="0" width="{{ w2 }}" height="40"/>{% set ns.x = ns.x + w2 + 2 %}
+  {% endfor %}
+  <rect x="{{ ns.x }}" y="0" width="1" height="40"/>
+</svg>
+{% endmacro %}
+
+{% macro timeline(events) %}
+<ol class="timeline">
+  {% for e in events %}
+  <li class="tl-item{% if loop.first %} tl-latest{% endif %}">
+    <span class="tl-dot tl-{{ e.status|slug }}"></span>
+    <div class="tl-body">
+      <div class="tl-head"><strong>{{ e.status }}</strong><span class="tl-where">{{ e.location }}</span></div>
+      {% if e.note %}<p>{{ e.note }}</p>{% endif %}
+      <time>{{ e.created_at|nice_date }}</time>
+    </div>
+  </li>
+  {% endfor %}
+</ol>
+{% endmacro %}

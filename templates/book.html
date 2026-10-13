@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Book a parcel{% endblock %}
+{% block content %}
+<h1 class="page-title">Book a parcel</h1>
+<p class="lead narrow">Fill in the details once. We create your waybill and tracking number immediately.</p>
+
+<form method="post" class="form-grid" novalidate id="bookForm"
+      data-rates='{{ SERVICES|tojson|forceescape }}'>
+  <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+  <fieldset>
+    <legend>Sender</legend>
+    <label>Full name<input name="sender_name" value="{{ form.sender_name }}" required maxlength="60"></label>
+    <label>Mobile number<input name="sender_phone" value="{{ form.sender_phone }}" inputmode="numeric" maxlength="10" placeholder="10 digits" required></label>
+    <label>Pickup city<input name="origin" value="{{ form.origin }}" required maxlength="60"></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Receiver</legend>
+    <label>Full name<input name="receiver_name" value="{{ form.receiver_name }}" required maxlength="60"></label>
+    <label>Mobile number<input name="receiver_phone" value="{{ form.receiver_phone }}" inputmode="numeric" maxlength="10" placeholder="10 digits" required></label>
+    <label>Delivery city<input name="destination" value="{{ form.destination }}" required maxlength="60"></label>
+  </fieldset>
+
+  <fieldset class="span2">
+    <legend>Parcel</legend>
+    <div class="row">
+      <label>Weight in kg<input name="weight_kg" id="weight" type="number" step="0.1" min="0.1" max="50" value="{{ form.weight_kg or '1' }}" required></label>
+      <label>What is inside<input name="contents" value="{{ form.contents }}" maxlength="120" placeholder="Books, clothes, documents"></label>
+    </div>
+    <div class="service-pick" role="radiogroup" aria-label="Delivery service">
+      {% for name, r in SERVICES.items() %}
+      <label class="service-opt">
+        <input type="radio" name="service" value="{{ name }}" {% if (form.service or 'Standard') == name %}checked{% endif %}>
+        <span><strong>{{ name }}</strong><small>{{ r.blurb }}</small></span>
+      </label>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <div class="span2 quote">
+    <p>Estimated price <strong id="quote">Rs 60.00</strong></p>
+    <button class="btn">Create waybill</button>
+  </div>
+</form>
+{% endblock %}

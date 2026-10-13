@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Track your parcel{% endblock %}
+{% block content %}
+{% from "_macros.html" import barcode %}
+<section class="hero">
+  <div class="hero-copy">
+    <h1>Where is my parcel right now?</h1>
+    <p class="lead">Type the number from your waybill. You will see every scan, from the pickup at the door to the knock at yours.</p>
+    <p><a class="btn btn-ghost" href="{{ url_for('book') }}">Book a parcel</a></p>
+  </div>
+
+  <form class="waybill" action="{{ url_for('track') }}" method="get">
+    <div class="waybill-top">
+      <span>Waybill</span><span>Parcel Trail Courier</span>
+    </div>
+    <label for="id">Tracking number</label>
+    <input id="id" name="id" class="waybill-input" placeholder="PT0000000000" maxlength="12"
+           autocomplete="off" autocapitalize="characters" spellcheck="false" required>
+    {{ barcode("PT0000000000") }}
+    <div class="perforation" aria-hidden="true"></div>
+    <button class="btn">Track this parcel</button>
+  </form>
+</section>
+
+<section class="block">
+  <h2>Pick how fast it should travel</h2>
+  <div class="rates">
+    {% for name, r in SERVICES.items() %}
+    <article class="rate">
+      <h3>{{ name }}</h3>
+      <p class="rate-price">Rs {{ r.base }} <span>plus Rs {{ r.per_kg }} per kg</span></p>
+      <p>{{ r.blurb }}.</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="block">
+  <h2>What happens after you book</h2>
+  <ol class="route">
+    <li><strong>Booked.</strong> You get a tracking number straight away.</li>
+    <li><strong>Picked up.</strong> Our rider scans the parcel at your door.</li>
+    <li><strong>At the hubs.</strong> Each sorting hub adds a scan to the trail.</li>
+    <li><strong>Delivered.</strong> The final scan closes the trail with the time.</li>
+  </ol>
+</section>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ s.tracking_id }}{% endblock %}
+{% block content %}
+{% from "_macros.html" import chip, timeline, barcode %}
+<p><a href="{{ url_for('console') }}">Back to console</a></p>
+<div class="result-head">
+  <div>
+    <p class="muted">{{ s.origin }} to {{ s.destination }}</p>
+    <h1 class="result-id">{{ s.tracking_id }}</h1>
+  </div>
+  <div class="result-status">{{ chip(s.status) }}<p class="muted">Expected by {{ s.eta|nice_date }}</p></div>
+</div>
+
+<div class="result-grid">
+  <div>
+    <h2>Scan history</h2>
+    {{ timeline(events) }}
+  </div>
+
+  <aside class="facts">
+    {% if s.status == 'Delivered' %}
+      <h2>Closed</h2>
+      <p>This parcel was delivered on {{ s.delivered_at|nice_date }}. Its trail can no longer be changed.</p>
+    {% else %}
+      <h2>Add a scan</h2>
+      <form method="post" action="{{ url_for('update_shipment', tracking_id=s.tracking_id) }}" class="stack">
+        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+        <label>New status
+          <select name="status" required>
+            {% for st in STATUSES %}<option {% if st == s.status %}selected{% endif %}>{{ st }}</option>{% endfor %}
+          </select>
+        </label>
+        <label>Current location<input name="location" maxlength="80" placeholder="Salem hub" required></label>
+        <label>Note for the customer<textarea name="note" maxlength="200" rows="3" placeholder="Optional"></textarea></label>
+        <button class="btn">Save scan</button>
+      </form>
+    {% endif %}
+    <h2 class="gap">Parcel details</h2>
+    <dl>
+      <dt>Sender</dt><dd>{{ s.sender_name }}<br><span class="muted">{{ s.sender_phone }}</span></dd>
+      <dt>Receiver</dt><dd>{{ s.receiver_name }}<br><span class="muted">{{ s.receiver_phone }}</span></dd>
+      <dt>Service</dt><dd>{{ s.service }}, {{ s.weight_kg }} kg</dd>
+      <dt>Contents</dt><dd>{{ s.contents or 'Not stated' }}</dd>
+      <dt>Price</dt><dd>Rs {{ '%.2f'|format(s.price) }}</dd>
+    </dl>
+  </aside>
+</div>
+{% endblock %}

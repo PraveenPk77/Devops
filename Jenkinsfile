@@ -11,7 +11,7 @@ pipeline {
         IMAGE_NAME = 'parcel-trail'
         APP_PORT   = '5003'
         // Common Docker Desktop installation paths on Windows agents:
-        PATH       = "C:\\Users\\dhars\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;C:\\Program Files\\Docker\\Docker\\resources\\bin;${env.PATH}"
+        PATH = "C:\\Users\\Home\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;${env.PATH}"
     }
 
     stages {

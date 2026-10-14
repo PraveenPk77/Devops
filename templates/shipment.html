@@ -1,47 +1,57 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block title %}{{ s.tracking_id }}{% endblock %}
 {% block content %}
 {% from "_macros.html" import chip, timeline, barcode %}
-<p><a href="{{ url_for('console') }}">Back to console</a></p>
+<p style="margin-bottom:1rem"><a href="{{ url_for('console') }}">&larr; Back to Console</a></p>
 <div class="result-head">
   <div>
-    <p class="muted">{{ s.origin }} to {{ s.destination }}</p>
+    <p>{{ s.origin }} &rarr; {{ s.destination }}</p>
     <h1 class="result-id">{{ s.tracking_id }}</h1>
   </div>
-  <div class="result-status">{{ chip(s.status) }}<p class="muted">Expected by {{ s.eta|nice_date }}</p></div>
+  <div class="result-status">
+    {{ chip(s.status) }}
+    <p class="muted" style="margin-top:.5rem">Expected by {{ s.eta|nice_date }}</p>
+  </div>
 </div>
 
 <div class="result-grid">
   <div>
-    <h2>Scan history</h2>
+    <h2>&#128205; Scan History</h2>
     {{ timeline(events) }}
   </div>
 
   <aside class="facts">
     {% if s.status == 'Delivered' %}
-      <h2>Closed</h2>
-      <p>This parcel was delivered on {{ s.delivered_at|nice_date }}. Its trail can no longer be changed.</p>
+      <h2>&#9989; Delivered</h2>
+      <p style="color:var(--soft);font-size:.9rem">This shipment was delivered on {{ s.delivered_at|nice_date }}. The trail is now closed and cannot be modified.</p>
     {% else %}
-      <h2>Add a scan</h2>
+      <h2>&#43; Add Scan Event</h2>
       <form method="post" action="{{ url_for('update_shipment', tracking_id=s.tracking_id) }}" class="stack">
         <input type="hidden" name="_csrf" value="{{ csrf_token }}">
-        <label>New status
-          <select name="status" required>
+        <div>
+          <label for="new_status">New Status</label>
+          <select id="new_status" name="status" required>
             {% for st in STATUSES %}<option {% if st == s.status %}selected{% endif %}>{{ st }}</option>{% endfor %}
           </select>
-        </label>
-        <label>Current location<input name="location" maxlength="80" placeholder="Salem hub" required></label>
-        <label>Note for the customer<textarea name="note" maxlength="200" rows="3" placeholder="Optional"></textarea></label>
-        <button class="btn">Save scan</button>
+        </div>
+        <div>
+          <label for="location">Current Location</label>
+          <input id="location" name="location" maxlength="80" placeholder="e.g. Salem Hub" required>
+        </div>
+        <div>
+          <label for="note">Note for Customer</label>
+          <textarea id="note" name="note" maxlength="200" rows="3" placeholder="Optional message"></textarea>
+        </div>
+        <button class="btn">&#128190; Save Scan</button>
       </form>
     {% endif %}
-    <h2 class="gap">Parcel details</h2>
+    <h2 class="gap">&#128230; Parcel Details</h2>
     <dl>
       <dt>Sender</dt><dd>{{ s.sender_name }}<br><span class="muted">{{ s.sender_phone }}</span></dd>
       <dt>Receiver</dt><dd>{{ s.receiver_name }}<br><span class="muted">{{ s.receiver_phone }}</span></dd>
       <dt>Service</dt><dd>{{ s.service }}, {{ s.weight_kg }} kg</dd>
       <dt>Contents</dt><dd>{{ s.contents or 'Not stated' }}</dd>
-      <dt>Price</dt><dd>Rs {{ '%.2f'|format(s.price) }}</dd>
+      <dt>Price</dt><dd style="color:var(--amber);font-weight:700">Rs {{ '%.2f'|format(s.price) }}</dd>
     </dl>
   </aside>
 </div>

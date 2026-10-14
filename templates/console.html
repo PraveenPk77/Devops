@@ -1,41 +1,72 @@
-{% extends "base.html" %}
-{% block title %}Console{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Dispatch Console{% endblock %}
 {% block content %}
 {% from "_macros.html" import chip %}
-<h1 class="page-title">Dispatch console</h1>
+<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:.5rem">
+  <div>
+    <h1 class="page-title">&#9881; Dispatch Console</h1>
+    <p class="lead" style="margin-bottom:0">Monitor and manage all active shipments in real time.</p>
+  </div>
+  <a class="btn" href="{{ url_for('book') }}">&#43; New Shipment</a>
+</div>
 
 <dl class="tally">
-  <div><dt>All parcels</dt><dd>{{ stats.total }}</dd></div>
-  <div><dt>Waiting for pickup</dt><dd>{{ stats.booked }}</dd></div>
-  <div><dt>On the road</dt><dd>{{ stats.active }}</dd></div>
-  <div><dt>Delivered</dt><dd>{{ stats.delivered }}</dd></div>
-  <div class="{% if stats.exceptions %}alert{% endif %}"><dt>Exceptions</dt><dd>{{ stats.exceptions }}</dd></div>
-  <div><dt>Booked value</dt><dd>Rs {{ '{:,.0f}'.format(stats.revenue) }}</dd></div>
+  <div>
+    <dt>Total Shipments</dt>
+    <dd>{{ stats.total }}</dd>
+  </div>
+  <div>
+    <dt>Awaiting Pickup</dt>
+    <dd>{{ stats.booked }}</dd>
+  </div>
+  <div class="tally-teal">
+    <dt>In Transit</dt>
+    <dd style="color:var(--teal)">{{ stats.active }}</dd>
+  </div>
+  <div>
+    <dt>Delivered</dt>
+    <dd style="color:var(--ok)">{{ stats.delivered }}</dd>
+  </div>
+  <div class="{% if stats.exceptions %}alert{% endif %}">
+    <dt>Exceptions</dt>
+    <dd>{{ stats.exceptions }}</dd>
+  </div>
+  <div>
+    <dt>Total Revenue</dt>
+    <dd style="color:var(--amber);font-size:1.3rem">Rs {{ '{:,.0f}'.format(stats.revenue) }}</dd>
+  </div>
 </dl>
 
 <form class="filters" method="get">
-  <input name="q" value="{{ q }}" placeholder="Search number or name" aria-label="Search">
+  <input name="q" value="{{ q }}" placeholder="&#128269; Search tracking number or name" aria-label="Search">
   <select name="status" aria-label="Filter by status">
-    <option value="">All statuses</option>
+    <option value="">All Statuses</option>
     {% for st in STATUSES %}<option {% if st == status %}selected{% endif %}>{{ st }}</option>{% endfor %}
   </select>
   <button class="btn btn-small">Filter</button>
-  {% if q or status %}<a class="linkbtn" href="{{ url_for('console') }}">Clear</a>{% endif %}
+  {% if q or status %}<a class="linkbtn" href="{{ url_for('console') }}">&#10005; Clear</a>{% endif %}
 </form>
 
 {% if rows %}
 <div class="table-wrap">
 <table class="manifest">
-  <thead><tr><th>Tracking number</th><th>Route</th><th>Service</th><th>Status</th><th>Expected</th><th></th></tr></thead>
+  <thead><tr>
+    <th>Tracking ID</th>
+    <th>Route</th>
+    <th>Service</th>
+    <th>Status</th>
+    <th>Expected By</th>
+    <th>Action</th>
+  </tr></thead>
   <tbody>
   {% for r in rows %}
     <tr>
       <td class="tid">{{ r.tracking_id }}</td>
-      <td>{{ r.origin }} to {{ r.destination }}<br><span class="muted">{{ r.sender_name }} to {{ r.receiver_name }}</span></td>
+      <td>{{ r.origin }} &rarr; {{ r.destination }}<br><span class="muted">{{ r.sender_name }} &rarr; {{ r.receiver_name }}</span></td>
       <td>{{ r.service }}<br><span class="muted">{{ r.weight_kg }} kg</span></td>
       <td>{{ chip(r.status) }}</td>
-      <td>{{ r.eta|nice_date }}</td>
-      <td><a href="{{ url_for('shipment_detail', tracking_id=r.tracking_id) }}">Update</a></td>
+      <td style="white-space:nowrap">{{ r.eta|nice_date }}</td>
+      <td><a class="btn btn-small btn-ghost" href="{{ url_for('shipment_detail', tracking_id=r.tracking_id) }}">Update</a></td>
     </tr>
   {% endfor %}
   </tbody>
@@ -43,8 +74,10 @@
 </div>
 {% else %}
 <div class="empty">
-  <p>No parcels match yet.</p>
-  <a class="btn btn-small" href="{{ url_for('book') }}">Book the first parcel</a>
+  <p style="font-size:3rem;margin-bottom:.5rem">&#128230;</p>
+  <p style="font-size:1.1rem;font-weight:600;color:var(--soft)">No shipments found</p>
+  <p>Try adjusting your search or filters.</p>
+  <a class="btn" style="margin-top:1rem" href="{{ url_for('book') }}">Book First Shipment</a>
 </div>
 {% endif %}
 {% endblock %}

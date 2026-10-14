@@ -1,28 +1,39 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block title %}Waybill {{ s.tracking_id }}{% endblock %}
 {% block content %}
 {% from "_macros.html" import barcode %}
-<h1 class="page-title">Your parcel is booked</h1>
-<p class="lead narrow">Write this number on the parcel or show it to our rider. Anyone with the number can follow the trail.</p>
+<h1 class="page-title">&#9989; Shipment Booked</h1>
+<p class="lead narrow">Your waybill has been created. Share this tracking number with the receiver or show it to our rider.</p>
 
 <article class="label-sheet">
-  <div class="label-head"><span>Parcel Trail Courier</span><span>{{ s.service }}</span></div>
+  <div class="label-head">
+    <span>D&amp;D Dispatch &amp; Delivery</span>
+    <span>{{ s.service }}</span>
+  </div>
   <div class="label-id">{{ s.tracking_id }}</div>
   {{ barcode(s.tracking_id) }}
   <div class="label-route">
-    <div><small>From</small><strong>{{ s.origin }}</strong><span>{{ s.sender_name }}</span></div>
+    <div>
+      <small>From</small>
+      <strong>{{ s.origin }}</strong>
+      <span>{{ s.sender_name }}</span>
+    </div>
     <div class="label-sep" aria-hidden="true"></div>
-    <div><small>To</small><strong>{{ s.destination }}</strong><span>{{ s.receiver_name }}</span></div>
+    <div>
+      <small>To</small>
+      <strong>{{ s.destination }}</strong>
+      <span>{{ s.receiver_name }}</span>
+    </div>
   </div>
   <dl class="label-meta">
     <div><dt>Weight</dt><dd>{{ s.weight_kg }} kg</dd></div>
     <div><dt>Price</dt><dd>Rs {{ '%.2f'|format(s.price) }}</dd></div>
-    <div><dt>Expected by</dt><dd>{{ s.eta|nice_date }}</dd></div>
+    <div><dt>Expected By</dt><dd>{{ s.eta|nice_date }}</dd></div>
   </dl>
 </article>
 
 <p class="actions">
-  <a class="btn" href="{{ url_for('track', id=s.tracking_id) }}">Track this parcel</a>
-  <button class="btn btn-ghost" type="button" onclick="window.print()">Print label</button>
+  <a class="btn" href="{{ url_for('track', id=s.tracking_id) }}">&#128269; Track This Shipment</a>
+  <button class="btn btn-ghost" type="button" onclick="window.print()">&#128438; Print Label</button>
 </p>
 {% endblock %}

@@ -1,30 +1,37 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Parcel Trail{% endblock %} | Parcel Trail Courier</title>
+  <title>{% block title %}Home{% endblock %} | Dispatch & Delivery Management System</title>
+  <meta name="description" content="Dispatch and Delivery Management System - Track shipments, book parcels, and manage deliveries efficiently.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <header class="top">
     <div class="wrap top-in">
-      <a class="brand" href="{{ url_for('index') }}"><span class="brand-box" aria-hidden="true"></span>Parcel Trail</a>
+      <a class="brand" href="{{ url_for('index') }}">
+        <span class="brand-box" aria-hidden="true">D&amp;D</span>
+        <span class="brand-text-wrap">
+          <span class="brand-name">Dispatch &amp; Delivery</span>
+          <span class="brand-sub">Management System</span>
+        </span>
+      </a>
       <nav aria-label="Main">
-        <a href="{{ url_for('track') }}" {% if request.endpoint == 'track' %}aria-current="page"{% endif %}>Track</a>
-        <a href="{{ url_for('book') }}" {% if request.endpoint == 'book' %}aria-current="page"{% endif %}>Book a parcel</a>
+        <a href="{{ url_for('track') }}" {% if request.endpoint == 'track' %}aria-current="page"{% endif %}>&#128269; Track</a>
+        <a href="{{ url_for('book') }}" {% if request.endpoint == 'book' %}aria-current="page"{% endif %}>&#43; New Shipment</a>
         {% if is_staff %}
-          <a href="{{ url_for('console') }}" {% if request.endpoint in ('console','shipment_detail') %}aria-current="page"{% endif %}>Console</a>
+          <a href="{{ url_for('console') }}" {% if request.endpoint in ('console','shipment_detail') %}aria-current="page"{% endif %}>&#9881; Console</a>
           <form method="post" action="{{ url_for('staff_logout') }}" class="inline">
             <input type="hidden" name="_csrf" value="{{ csrf_token }}">
             <button class="linkbtn">Sign out</button>
           </form>
         {% else %}
-          <a href="{{ url_for('staff_login') }}">Staff</a>
+          <a href="{{ url_for('staff_login') }}">&#128100; Staff</a>
         {% endif %}
       </nav>
     </div>
@@ -39,8 +46,8 @@
 
   <footer class="foot">
     <div class="wrap foot-in">
-      <span>Parcel Trail Courier. Hubs in Coimbatore, Chennai, Bengaluru, Hyderabad and Mumbai.</span>
-      <span>Open 8 am to 8 pm, every day.</span>
+      <span><strong style="color:var(--teal)">D&amp;D</strong> Dispatch &amp; Delivery Management System &mdash; Hubs in Coimbatore, Chennai, Bengaluru, Hyderabad &amp; Mumbai</span>
+      <span>Operations: 8 am &ndash; 8 pm, every day</span>
     </div>
   </footer>
   <script src="{{ url_for('static', filename='app.js') }}"></script>

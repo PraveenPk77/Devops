@@ -1,8 +1,10 @@
-{% extends "base.html" %}
-{% block title %}Track a parcel{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Track Shipment{% endblock %}
 {% block content %}
 {% from "_macros.html" import chip, timeline %}
-<h1 class="page-title">Track a parcel</h1>
+<h1 class="page-title">&#128269; Track Shipment</h1>
+<p class="lead">Enter your tracking number to see real-time delivery status.</p>
+
 <form class="search" action="{{ url_for('track') }}" method="get">
   <label for="id" class="sr">Tracking number</label>
   <input id="id" name="id" value="{{ q }}" placeholder="PT0000000000" maxlength="12"
@@ -16,18 +18,18 @@
 <section class="result">
   <div class="result-head">
     <div>
-      <p class="muted">Tracking number</p>
+      <p>Tracking Number</p>
       <p class="result-id">{{ s.tracking_id }}</p>
     </div>
     <div class="result-status">
       {{ chip(s.status) }}
-      {% if s.status == 'Delivered' %}<p class="muted">Delivered {{ s.delivered_at|nice_date }}</p>
-      {% else %}<p class="muted">Expected by {{ s.eta|nice_date }}</p>{% endif %}
+      {% if s.status == 'Delivered' %}<p class="muted" style="margin-top:.5rem">Delivered {{ s.delivered_at|nice_date }}</p>
+      {% else %}<p class="muted" style="margin-top:.5rem">Expected by {{ s.eta|nice_date }}</p>{% endif %}
     </div>
   </div>
 
   {% if s.status == 'Exception' %}
-  <div class="flash flash-warn">There is a delay on this parcel. The latest scan below explains why. Our team is working on it.</div>
+  <div class="flash flash-warn">&#9888; There is a delay on this shipment. The latest scan below explains why. Our team is working on it.</div>
   {% endif %}
 
   <ol class="steps" aria-label="Delivery progress">
@@ -40,18 +42,18 @@
 
   <div class="result-grid">
     <div>
-      <h2>Scan history</h2>
+      <h2>&#128205; Scan History</h2>
       {{ timeline(events) }}
     </div>
     <aside class="facts">
-      <h2>Shipment</h2>
+      <h2>Shipment Info</h2>
       <dl>
-        <dt>From</dt><dd>{{ s.origin }}</dd>
-        <dt>To</dt><dd>{{ s.destination }}</dd>
+        <dt>Origin</dt><dd>{{ s.origin }}</dd>
+        <dt>Destination</dt><dd>{{ s.destination }}</dd>
         <dt>Service</dt><dd>{{ s.service }}</dd>
         <dt>Weight</dt><dd>{{ s.weight_kg }} kg</dd>
         <dt>Receiver</dt><dd>{{ s.receiver_name }}<br><span class="muted">{{ mask_phone(s.receiver_phone) }}</span></dd>
-        <dt>Booked on</dt><dd>{{ s.created_at|nice_date }}</dd>
+        <dt>Booked On</dt><dd>{{ s.created_at|nice_date }}</dd>
       </dl>
     </aside>
   </div>

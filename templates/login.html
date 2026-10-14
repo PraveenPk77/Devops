@@ -1,14 +1,25 @@
-{% extends "base.html" %}
-{% block title %}Staff sign in{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Staff Sign In{% endblock %}
 {% block content %}
-<section class="login">
-  <h1 class="page-title">Staff sign in</h1>
-  <p class="lead">Sign in to scan parcels and update their status.</p>
-  <form method="post" class="stack">
-    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
-    <label>Username<input name="username" autocomplete="username" required autofocus></label>
-    <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
-    <button class="btn">Sign in</button>
-  </form>
-</section>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-title">
+      <div class="login-icon">D&amp;D</div>
+      <h1>Staff Portal</h1>
+      <p>Sign in to manage dispatch operations</p>
+    </div>
+    <form method="post" class="stack">
+      <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+      <div>
+        <label for="username">Username</label>
+        <input id="username" name="username" autocomplete="username" required autofocus placeholder="Enter your username">
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password">
+      </div>
+      <button class="btn" style="margin-top:.5rem">&#128274; Sign In</button>
+    </form>
+  </div>
+</div>
 {% endblock %}
